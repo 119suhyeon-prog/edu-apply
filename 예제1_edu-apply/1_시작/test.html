@@ -18,7 +18,7 @@
     <thead><tr><th>번호</th><th>확인 내용</th><th>결과</th></tr></thead>
     <tbody id="results"></tbody>
   </table>
-  <p>T-01, T-07은 화면에서 직접 확인합니다.</p>
+  <p>T-01, T-07은 화면에서, T-13 · T-15(DB 거부)는 배포 주소에서 계정 2개로 직접 확인합니다.</p>
 
   <script src="logic.js"></script>
   <script>
@@ -54,6 +54,13 @@
     check('F-08', '지난 과정은 D-7 대상 아님', () => !isWithin7Days('2026-09-24', '2026-10-13'));
     check('날짜', 'formatDate가 한국 시간 기준 날짜를 돌려줌', () => formatDate(new Date(2026, 9, 13, 0, 30)) === '2026-10-13');
     check('F-07', 'CSV 맨 앞에 BOM이 있음', () => toCSV([]).charCodeAt(0) === 0xFEFF);
+    const mine = { id: 9, course: 'A과정', name: '가상A', status: '신청', userId: 'A' };
+    check('T-15', '내 신청(신청 상태)은 삭제 버튼', () => canDelete(mine, 'A'));
+    check('T-15', '남의 신청은 삭제 버튼 없음', () => !canDelete(mine, 'B'));
+    check('T-12', '로그인 전에는 삭제 버튼 없음', () => !canDelete(mine, null));
+    check('T-16', '이수된 내 신청은 삭제 버튼 없음', () => !canDelete({ ...mine, status: '이수' }, 'A'));
+    check('T-16', '처음 가상 건(계정 없음)은 아무도 삭제 못 함', () => !canDelete(apps[0], 'A'));
+    check('T-14', '내 신청은 내 계정 것만', () => myApps([...apps, mine], 'A').length === 1 && myApps([...apps, mine], null).length === 0);
 
     const body = document.getElementById('results');
     for (const r of rows) {

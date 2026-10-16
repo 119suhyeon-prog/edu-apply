@@ -26,6 +26,17 @@ body {
 .top h1 { margin: 0; font-size: 20px; }
 .tag { font-size: 12px; padding: 2px 8px; border: 1px solid #fff; border-radius: 10px; }
 .mode { margin-left: auto; font-size: 13px; opacity: .9; }
+.top button.ghost { background: transparent; color: #fff; border-color: #fff; }
+
+/* 4회차 Phase 5 : 로그인 전 · 후 */
+body:not(.logged-in) .only-in { display: none !important; }
+body.logged-in .only-out { display: none !important; }
+body.logged-in .top { background: #2f6b3a; }
+.auth { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.who { font-weight: bold; }
+.who.guest { font-weight: normal; padding: 2px 8px; border-radius: 10px; background: rgba(255, 255, 255, .18); }
+.login-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end; }
+button.danger { background: #fff; color: var(--error); border: 1px solid var(--error); }
 
 main { max-width: 1080px; margin: 0 auto; padding: 16px; }
 section { margin-bottom: 18px; }

@@ -41,6 +41,16 @@ function calcYearHours(apps, name, year) {
     .reduce((sum, a) => sum + Number(a.hours || 0), 0);
 }
 
+// R-09 (4회차 Phase 5) 삭제 버튼 : 내가 넣은 신청이면서 아직 '신청' 상태일 때만
+function canDelete(app, userId) {
+  return Boolean(userId) && app.userId === userId && app.status === STATUS.APPLY;
+}
+
+// F-14 내 신청 : 로그인한 계정으로 넣은 신청만
+function myApps(apps, userId) {
+  return userId ? apps.filter(a => a.userId === userId) : [];
+}
+
 // R-04 상태 변경 : 신청 → 이수, 신청 → 취소만 가능
 function canChangeStatus(current, next) {
   return current === STATUS.APPLY && (next === STATUS.DONE || next === STATUS.CANCEL);
