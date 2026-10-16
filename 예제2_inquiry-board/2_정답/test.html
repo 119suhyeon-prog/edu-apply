@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>완료 기준 자동 테스트 – 문의 접수 현황판</title>
+  <style>
+    body { font-family: "Malgun Gothic", sans-serif; padding: 20px; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    .PASS { color: #1e7a46; font-weight: bold; }
+    .FAIL { color: #c0392b; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>완료 기준(T-xx) 자동 테스트</h1>
+  <p id="summary"></p>
+  <table>
+    <thead><tr><th>번호</th><th>확인 내용</th><th>결과</th></tr></thead>
+    <tbody id="results"></tbody>
+  </table>
+  <p>T-02 · T-07 · T-08 · T-10은 접수번호와 저장이 DB 몫이라 화면·배포 주소에서 직접 확인합니다.</p>
+
+  <script src="logic.js"></script>
+  <script>
+    const rows = [];
+    function check(no, desc, fn) {
+      let ok = false;
+      try { ok = fn() === true; } catch (e) { console.error(no, e); }
+      rows.push({ no, desc, ok });
+    }
+
+    check('T-01', '2026-09-29(화) 접수 → 답변기한 2026-10-02', () => calcDueDate('2026-09-29') === '2026-10-02');
+    check('T-06', '2026-11-06(금) 접수 → 주말 제외 2026-11-11(수)', () => calcDueDate('2026-11-06') === '2026-11-11');
+    check('T-06', '주말 포함 계산이면 2026-11-09', () => calcDueDate('2026-11-06', false) === '2026-11-09');
+    check('T-03', '답변 없이 답변완료는 불가', () => !canChangeStatus('처리중', '답변완료', '  '));
+    check('T-03', '답변이 있으면 답변완료 가능', () => canChangeStatus('처리중', '답변완료', '답변함'));
+    check('T-04', '답변완료 → 처리중 되돌리기 불가', () => !canChangeStatus('답변완료', '처리중', '답변함'));
+    check('R-03', '접수 → 답변완료 건너뛰기 불가', () => !canChangeStatus('접수', '답변완료', '답변함'));
+    check('T-05', '기한 지난 답변완료는 기한초과가 아님',
+      () => !isOverdue({ status: '답변완료', dueDate: '2026-10-02' }, '2026-10-13'));
+    check('R-05', '기한 지난 처리중은 기한초과',
+      () => isOverdue({ status: '처리중', dueDate: '2026-10-12' }, '2026-10-13'));
+    check('R-05', '기한 당일은 아직 기한초과가 아님',
+      () => !isOverdue({ status: '접수', dueDate: '2026-10-13' }, '2026-10-13'));
+    check('R-06', '2026-10-13(화) 기준 10-12(월)~10-18(일)이 이번 주',
+      () => isThisWeek('2026-10-12', '2026-10-13') && isThisWeek('2026-10-18', '2026-10-13') && !isThisWeek('2026-10-11', '2026-10-13'));
+    check('R-06', '일요일(10-18) 기준으로도 같은 주', () => isThisWeek('2026-10-12', '2026-10-18'));
+    check('F-06', '검색은 제목·내용 모두에서 찾음', () => {
+      const l = [{ title: '프린터 오류', content: '', status: '접수' }, { title: '기타', content: '프린터 토너', status: '처리중' }];
+      return filterList(l, '프린터', '').length === 2 && filterList(l, '프린터', '처리중').length === 1;
+    });
+    check('F-07', '유형별 건수는 많은 순', () => {
+      const r = countByType([{ type: '기타' }, { type: '제도문의' }, { type: '제도문의' }]);
+      return r[0].type === '제도문의' && r[0].count === 2;
+    });
+    check('날짜', 'formatDate가 한국 시간 기준 날짜를 돌려줌', () => formatDate(new Date(2026, 9, 13, 0, 30)) === '2026-10-13');
+
+    const body = document.getElementById('results');
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      for (const [text, cls] of [[r.no], [r.desc], [r.ok ? 'PASS' : 'FAIL', r.ok ? 'PASS' : 'FAIL']]) {
+        const td = document.createElement('td');
+        td.textContent = text;
+        if (cls) td.className = cls;
+        tr.append(td);
+      }
+      body.append(tr);
+    }
+    const pass = rows.filter(r => r.ok).length;
+    document.getElementById('summary').textContent = `${rows.length}개 중 ${pass}개 PASS`;
+  </script>
+</body>
+</html>

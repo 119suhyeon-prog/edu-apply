@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>교육 신청 현황 관리</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>교육 신청 현황 관리</h1>
+    <span class="tag">교육용 가상 데이터</span>
+    <span id="saveMode" class="mode">저장 위치 : Supabase DB (모두가 같은 목록)</span>
+    <span id="authBox" class="auth"></span>
+    <button id="reloadBtn" class="small ghost" type="button">새로 불러오기</button>
+  </header>
+
+  <main>
+    <!-- 로그인 전에만 보임 -->
+    <section class="card only-out">
+      <h2>로그인</h2>
+      <p class="muted">로그인하면 교육을 신청하고, 내 신청을 확인 · 삭제할 수 있습니다. 지금은 현황 보기만 됩니다.</p>
+      <form id="loginForm" class="login-form" autocomplete="off">
+        <label>이메일<input id="emailInput" type="email" placeholder="test1@example.com (가상 이메일)"></label>
+        <label>비밀번호<input id="passwordInput" type="password" placeholder="6자 이상"></label>
+        <button id="loginBtn" type="submit">로그인</button>
+        <button id="signUpBtn" class="ghost" type="button">처음이면 회원가입</button>
+      </form>
+    </section>
+
+    <!-- 로그인 후에만 보임 -->
+    <section class="card only-in">
+      <h2>교육 신청</h2>
+      <form id="applyForm" autocomplete="off">
+        <label>교육과정명<input id="courseInput" list="courseOptions" placeholder="목록에서 고르거나 새로 입력" required></label>
+        <datalist id="courseOptions"></datalist>
+        <label>교육일<input id="dateInput" type="date" required></label>
+        <label>교육시간(시간)<input id="hoursInput" type="number" min="1" max="40" step="1" required></label>
+        <label>신청자<input id="nameInput" placeholder="가상 이름" required></label>
+        <label>소속팀<input id="teamInput" placeholder="예) 기획팀" required></label>
+        <button id="applyBtn" type="submit">신청</button>
+      </form>
+    </section>
+    <p id="msgBox" class="msg" role="status"></p>
+
+    <section>
+      <h2>과정별 현황</h2>
+      <div id="courseSummary" class="summary"></div>
+    </section>
+
+    <section class="card">
+      <h2>신청 목록 <small>교육일 빠른 순</small></h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>교육일</th><th>교육과정</th><th>시간</th><th>신청자</th><th>소속팀</th><th>상태</th><th class="only-in">변경</th></tr></thead>
+          <tbody id="applicationList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>내 신청 <small class="only-in">내 계정으로 넣은 신청만 · '신청' 상태만 삭제 가능</small></h2>
+      <p class="muted only-out">로그인하면 내 신청을 볼 수 있습니다.</p>
+      <div class="table-wrap only-in">
+        <table>
+          <thead><tr><th>교육일</th><th>교육과정</th><th>신청자</th><th>상태</th><th>삭제</th></tr></thead>
+          <tbody id="myAppList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>개인별 올해 누적 이수 시간 <small>'이수'만 합산</small></h2>
+      <table class="narrow">
+        <thead><tr><th>신청자</th><th>이수 시간</th></tr></thead>
+        <tbody id="hoursTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>교육용 프로토타입 – 실제 이름·연락처·기관 자료를 입력하지 마세요</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

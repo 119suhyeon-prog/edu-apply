@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문의 접수 현황판</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>문의 접수 현황판</h1>
+    <span class="tag">교육용 가상 데이터</span>
+    <span id="saveMode" class="mode">저장 위치 : Supabase DB (팀 공용)</span>
+    <button id="reloadBtn" class="small ghost" type="button">새로 불러오기</button>
+  </header>
+
+  <main>
+    <section id="summaryCards" class="summary"></section>
+
+    <div class="layout">
+      <section class="card">
+        <h2>문의 등록</h2>
+        <form id="inquiryForm" autocomplete="off">
+          <label>접수경로
+            <select id="channelSelect"><option>전화</option><option>메일</option><option>방문</option></select>
+          </label>
+          <label>문의유형
+            <select id="typeSelect"><option>제도문의</option><option>시스템오류</option><option>자료요청</option><option>기타</option></select>
+          </label>
+          <label>제목<input id="titleInput" maxlength="60" required></label>
+          <label>내용<textarea id="contentInput" rows="3" placeholder="문의자 이름·연락처는 적지 마세요"></textarea></label>
+          <label>담당자<input id="ownerInput" placeholder="가상 이름" required></label>
+          <button id="addBtn" type="submit">접수</button>
+        </form>
+        <p id="duePreview" class="muted"></p>
+        <p id="msgBox" class="msg" role="status"></p>
+      </section>
+
+      <section class="card">
+        <h2>문의 목록 <small>접수 최신순 · 빨간 줄 = 기한초과</small></h2>
+        <div class="filters">
+          <input id="searchInput" placeholder="제목·내용 검색">
+          <select id="statusFilter">
+            <option value="">전체 상태</option><option>접수</option><option>처리중</option><option>답변완료</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>접수번호</th><th>접수일</th><th>경로</th><th>유형</th><th>제목</th><th>담당자</th><th>답변기한</th><th>상태</th></tr></thead>
+            <tbody id="inquiryTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="layout">
+      <section id="detailPanel" class="card"></section>
+      <section class="card">
+        <h2>문의유형별 건수</h2>
+        <div id="typeChart"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>교육용 프로토타입 – 실제 문의 내용·개인정보를 입력하지 마세요</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
