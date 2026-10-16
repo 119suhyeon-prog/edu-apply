@@ -10,7 +10,8 @@
   <header class="top">
     <h1>교육 신청 현황 관리</h1>
     <span class="tag">교육용 가상 데이터</span>
-    <span id="saveMode" class="mode">저장 위치 : 이 브라우저 (localStorage)</span>
+    <span id="saveMode" class="mode">저장 위치 : Supabase DB (모두가 같은 목록)</span>
+    <button id="reloadBtn" class="small ghost" type="button">새로 불러오기</button>
   </header>
 
   <main>
@@ -54,6 +55,8 @@
 
   <footer>교육용 프로토타입 – 실제 이름·연락처·기관 자료를 입력하지 마세요</footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <script src="logic.js"></script>
   <script src="app.js"></script>
 </body>
