@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f3">
+  <title>문의 접수 현황판</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">EDUCATION PROTOTYPE</p>
+      <h1>문의 접수 현황판</h1>
+    </div>
+    <div class="header-tools">
+      <p class="data-note"><span>교육용 가상 데이터</span><span id="saveMode">Supabase DB (팀 공용)</span></p>
+      <button class="button button-secondary" id="reloadBtn" type="button" data-action="reload">새로 불러오기</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="entry-panel" aria-labelledby="entryHeading">
+      <div class="section-heading">
+        <p class="eyebrow">NEW INQUIRY</p>
+        <h2 id="entryHeading">문의 등록</h2>
+      </div>
+      <form id="inquiryForm">
+        <label for="channelSelect">접수경로</label>
+        <select id="channelSelect" name="channel" required>
+          <option value="">선택하세요</option>
+          <option>전화</option>
+          <option>메일</option>
+          <option>방문</option>
+        </select>
+
+        <label for="typeSelect">문의유형</label>
+        <select id="typeSelect" name="type" required>
+          <option value="">선택하세요</option>
+          <option>제도문의</option>
+          <option>시스템오류</option>
+          <option>자료요청</option>
+          <option>기타</option>
+        </select>
+
+        <label for="titleInput">제목</label>
+        <input id="titleInput" name="title" maxlength="160" required>
+
+        <label for="contentInput">문의 내용</label>
+        <textarea id="contentInput" name="content" rows="5"></textarea>
+
+        <label for="ownerInput">담당자</label>
+        <input id="ownerInput" name="owner" maxlength="80" required>
+
+        <p class="due-preview">예상 답변기한 <strong id="duePreview">계산 중</strong></p>
+        <button class="button button-primary" id="addBtn" type="submit">문의 등록</button>
+      </form>
+      <p id="msgBox" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="list-panel" aria-labelledby="listHeading">
+      <div class="section-heading list-heading">
+        <div>
+          <p class="eyebrow">INQUIRY LOG</p>
+          <h2 id="listHeading">접수 목록</h2>
+        </div>
+        <span class="list-caption">최근 접수순</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">접수번호</th>
+              <th scope="col">접수일</th>
+              <th scope="col">유형 · 제목</th>
+              <th scope="col">담당자</th>
+              <th scope="col">답변기한</th>
+              <th scope="col">상태</th>
+            </tr>
+          </thead>
+          <tbody id="inquiryTable"></tbody>
+        </table>
+        <p class="empty-state" data-role="empty-state" hidden>등록된 문의가 없습니다.</p>
+      </div>
+      <aside id="detailPanel" class="detail-panel" aria-labelledby="detailHeading" hidden>
+        <div class="detail-heading">
+          <div>
+            <p class="eyebrow">INQUIRY DETAIL</p>
+            <h3 id="detailHeading">문의 상세</h3>
+          </div>
+          <button class="icon-button" type="button" data-action="close-detail" aria-label="상세 닫기" title="상세 닫기">×</button>
+        </div>
+        <dl class="detail-meta" data-role="detail-meta"></dl>
+        <div class="detail-copy">
+          <h4>문의 내용</h4>
+          <p data-role="detail-content"></p>
+        </div>
+        <label for="answerInput">답변</label>
+        <textarea id="answerInput" rows="4" placeholder="답변 내용을 입력하세요"></textarea>
+        <div class="detail-actions">
+          <button class="button button-secondary" type="button" data-action="save-answer">답변 저장</button>
+          <button class="button button-danger" type="button" data-action="remove">문의 삭제</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

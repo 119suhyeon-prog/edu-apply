@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문의 현황판 자동 테스트</title>
+  <style>
+    body { max-width: 760px; margin: 40px auto; padding: 0 18px; color: #202c2a; font-family: "Aptos", "Malgun Gothic", sans-serif; }
+    h1 { font-family: Georgia, "Malgun Gothic", serif; font-size: 26px; }
+    p { color: #64716e; font-size: 13px; line-height: 1.6; }
+    table { width: 100%; margin-top: 22px; border-collapse: collapse; }
+    th, td { padding: 12px; border-bottom: 1px solid #d9e0dc; text-align: left; font-size: 13px; }
+    th { background: #f3f6f2; }
+    .pass { color: #176b55; font-weight: 800; }
+    .fail { color: #a1362d; font-weight: 800; }
+    #testSummary { margin-top: 16px; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <h1>문의 현황판 자동 테스트</h1>
+  <p>날짜 계산과 접수 최신순 정렬을 확인합니다. T-02와 T-07은 Supabase에 연결된 index.html에서 직접 확인합니다.</p>
+  <table>
+    <thead><tr><th scope="col">기준</th><th scope="col">검사 내용</th><th scope="col">결과</th></tr></thead>
+    <tbody id="testResults"></tbody>
+  </table>
+  <p id="testSummary" role="status" aria-live="polite"></p>
+  <script src="logic.js"></script>
+  <script>
+    const tests = [
+      {
+        id: "T-01",
+        label: "2026-09-29 접수의 답변기한",
+        run: () => calcDueDate("2026-09-29", true) === "2026-10-02"
+      },
+      {
+        id: "날짜 유틸",
+        label: "주말을 포함한 날짜 더하기",
+        run: () => addDays("2026-10-02", 2) === "2026-10-04"
+      },
+      {
+        id: "목록 정렬",
+        label: "접수일 최신순 정렬",
+        run: () => {
+          const result = sortByReceived([
+            { id: "Q-2026-001", receivedDate: "2026-09-29" },
+            { id: "Q-2026-002", receivedDate: "2026-10-01" }
+          ]);
+          return result[0].id === "Q-2026-002" && result[1].id === "Q-2026-001";
+        }
+      }
+    ];
+
+    const resultBody = document.getElementById("testResults");
+    let failures = 0;
+    for (const test of tests) {
+      let passed = false;
+      try { passed = test.run(); } catch (error) { console.error(error); }
+      if (!passed) failures += 1;
+      const row = document.createElement("tr");
+      const idCell = document.createElement("td");
+      const labelCell = document.createElement("td");
+      const resultCell = document.createElement("td");
+      idCell.textContent = test.id;
+      labelCell.textContent = test.label;
+      resultCell.textContent = passed ? "PASS" : "FAIL";
+      resultCell.className = passed ? "pass" : "fail";
+      row.append(idCell, labelCell, resultCell);
+      resultBody.append(row);
+    }
+    const summary = document.getElementById("testSummary");
+    summary.textContent = failures === 0 ? `전체 ${tests.length}개 테스트 PASS` : `${failures}개 테스트 FAIL`;
+    summary.className = failures === 0 ? "pass" : "fail";
+  </script>
+</body>
+</html>
